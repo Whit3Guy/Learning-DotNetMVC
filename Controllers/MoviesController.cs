@@ -20,9 +20,41 @@ namespace DotNetApplicationMVC.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index( string MovieGenre, string SearchString)
         {
-            return View(await _context.Movie.ToListAsync());
+            //vendo sobre o banco de dados
+            if (_context.Movie == null)
+            {
+                return Problem("Error with database connection");
+            }
+
+            // pegando de forma dinamica os generos existentes
+            var genresQuery = from filmes in _context.Movie select filmes.Genre;
+
+
+            // generos
+            var movies = from m in _context.Movie select m;
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+                movies = movies.Where(movie => movie.Title!.ToLower().Contains(SearchString.ToLower()));
+            }
+
+            if (!String.IsNullOrEmpty(MovieGenre))
+            {
+                movies = movies.Where( movie => movie.Genre!.ToUpper() == MovieGenre.ToUpper());
+            }
+
+            MovieGenreViewModel movieGenderVM = new MovieGenreViewModel
+            {
+                Genres = new SelectList(await genresQuery.Distinct().ToListAsync()),
+                Movies = await movies.ToListAsync() 
+            };
+
+
+
+
+            return View(movieGenderVM);
         }
 
         // GET: Movies/Details/5
@@ -84,16 +116,25 @@ namespace DotNetApplicationMVC.Controllers
         // POST: Movies/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
         [HttpPost]
+
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Genre,Price")] Movie movie)
         {
+
+            // uma forma de fazer com que não se altere o id do filme pelo metodo post
+
             if (id != movie.Id)
+
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
+
             {
                 try
                 {
