@@ -122,7 +122,7 @@ namespace DotNetApplicationMVC.Controllers
 
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Genre,Price")] Movie movie)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Genre,Price, Rating")] Movie movie)
         {
 
             // uma forma de fazer com que não se altere o id do filme pelo metodo post

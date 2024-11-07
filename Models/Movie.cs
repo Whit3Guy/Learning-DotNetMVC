@@ -17,4 +17,6 @@ namespace DotNetApplicationMVC.Models;
         [Column(TypeName = "decimal(5,2)")]
         public decimal Price { get; set; }
 
+        public string? Rating { get; set; }
+
     }
